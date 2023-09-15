@@ -19,6 +19,7 @@
 # bundling it with the following loop
 - name: Update APT cache
   ansible.builtin.apt:
+    cache_valid_time: "3600"
     update_cache: true
 
 # Installing pre-req software for kubeadm, kubelet, and containerd
