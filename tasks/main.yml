@@ -11,7 +11,7 @@
 - name: Remove swap from /etc/fstab
   ansible.builtin.replace:
     path: /etc/fstab
-    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
     replace: '# \1'
 
 # This turns off swap for the current session
