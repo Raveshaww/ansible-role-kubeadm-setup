@@ -1,2 +1,17 @@
 ---
 # handlers file for role-kubeadm-setup
+
+# This turns off swap for the current session
+- name: Disable swap
+  ansible.builtin.shell: sudo swapoff -a
+
+# This applies the above modules in the current session, saving us the need for a reboot
+- name: Apply sysctl params
+  ansible.builtin.shell: sudo sysctl --system
+
+# Only needs to be ran if the cgroup driver is changed
+- name: Restart containerd
+  ansible.builtin.systemd_service:
+    state: restarted
+    daemon_reload: true
+    name: containerd.service

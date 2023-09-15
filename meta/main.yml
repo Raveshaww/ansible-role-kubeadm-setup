@@ -32,6 +32,7 @@ galaxy_info:
   - name: Ubuntu
     versions:
     - jammy
+    - focal
   # - name: SomePlatform
   #   versions:
   #   - all
