@@ -1,0 +1,23 @@
+ports:
+  - port: "10250"
+    proto: tcp
+  - port: "30000:32767"
+    proto: tcp
+prereq_software:
+  - name: curl
+  - name: ca-certificates
+  - name: gnupg
+  - name: apt-transport-https
+kubernetes_software:
+  - name: kubelet
+  - name: kubeadm
+repos:
+  - key_url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+    key_dest: /etc/apt/trusted.gpg.d/kubernetes.asc
+    apt_repo: "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes.asc] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /"
+  - key_url: https://download.docker.com/linux/ubuntu/gpg
+    key_dest: /etc/apt/trusted.gpg.d/docker.asc
+    apt_repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+modules:
+  - name: br_netfilter
+  - name: overlay

@@ -1,0 +1,114 @@
+---
+# tasks file for role-kubeadm-setup
+- name: Open Ports in UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  loop: "{{ ports }}"
+
+# Kubeadm requires that swap is disabled on nodes, and this will ensure that swap is not renable upon boot
+- name: Remove swap from /etc/fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+
+# This turns off swap for the current session
+- name: Disable swap
+  ansible.builtin.shell: sudo swapoff -a
+
+# I have noticed a small speed difference when moving this to its own task rather than
+# bundling it with the following loop
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+
+# Installing pre-req software for kubeadm, kubelet, and containerd
+- name: Install pre-req software via apt
+  ansible.builtin.apt:
+    name: "{{ item.name }}"
+    state: latest
+  loop: "{{ prereq_software }}"
+
+# It currently seems as though apt-key doesn't handle gpg keys well, so this is a temporary workaround
+- name: Download GPG keys for Docker and k8s apt repos
+  ansible.builtin.get_url:
+    url: "{{ item.key_url }}"
+    dest: "{{ item.key_dest }}"
+    mode: "0644"
+  loop: "{{ repos }}"
+
+- name: Add Docker and k8s repos
+  ansible.builtin.apt_repository:
+    repo: "{{ item.apt_repo }}"
+    state: present
+  loop: "{{ repos }}"
+
+# Setting the necessary kernel modules for k8s
+- name: Create /etc/modules-load.d/k8s.conf
+  ansible.builtin.file:
+    path: /etc/modules-load.d/k8s.conf
+    state: touch
+    mode: "0644"
+
+- name: Set /etc/modules-load.d/k8s.conf
+  ansible.builtin.blockinfile:
+    path: /etc/modules-load.d/k8s.conf
+    block: |
+      overlay
+      br_netfilter
+
+- name: Add relevant modules
+  community.general.modprobe:
+    state: present
+    persistent: present
+    name: "{{ item.name }}"
+  loop: "{{ modules }}"
+
+- name: Create /etc/sysctl.d/k8s.conf
+  ansible.builtin.file:
+    path: /etc/sysctl.d/k8s.conf
+    state: touch
+    mode: "0644"
+
+- name: Set /etc/sysctl.d/k8s.conf
+  ansible.builtin.blockinfile:
+    path: /etc/sysctl.d/k8s.conf
+    block: |
+      net.bridge.bridge-nf-call-iptables  = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.ipv4.ip_forward                 = 1
+
+# This applies the above modules in the current session, saving us the need for a reboot
+- name: Apply sysctl params
+  ansible.builtin.shell: sudo sysctl --system
+
+- name: Install containerd
+  ansible.builtin.apt:
+    name: containerd.io
+    update_cache: true
+
+- name: Set systemd cgroup driver
+  ansible.builtin.template:
+    src: templates/cgroup.j2
+    dest: /etc/containerd/config.toml
+    mode: "0644"
+
+- name: Restart containerd
+  ansible.builtin.systemd_service:
+    state: restarted
+    daemon_reload: true
+    name: containerd.service
+
+- name: Install kubelet and kubeadm
+  ansible.builtin.apt:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ kubernetes_software }}"
+
+- name: Prevent kubelet and kubeadm from being updated
+  ansible.builtin.dpkg_selections:
+    name: "{{ item.name }}"
+    selection: hold
+  loop: "{{ kubernetes_software }}"

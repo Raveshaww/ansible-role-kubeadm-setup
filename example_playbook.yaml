@@ -1,0 +1,7 @@
+---
+- name: Runs role-kubeadm-setup
+  hosts: all
+  tasks:
+    - name: Run role-kubeadm-setup
+      ansible.builtin.include_role:
+        name: role-kubeadm-setup
