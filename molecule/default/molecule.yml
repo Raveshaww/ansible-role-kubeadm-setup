@@ -1,0 +1,20 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+platforms:
+  - name: focal
+    box: ubuntu/focal64
+    memory: 4096
+    cpus: 2
+  - name: jammy
+    box: ubuntu/jammy64
+    memory: 4096
+    cpus: 2
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
