@@ -87,3 +87,4 @@
     name: "{{ item.name }}"
     selection: hold
   loop: "{{ kubernetes_software }}"
+  notify: Check if containerd.service is running

@@ -1,0 +1,28 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+platforms:
+  - name: focal
+    box: ubuntu/focal64
+    memory: 2048
+    cpus: 2
+  - name: jammy
+    box: ubuntu/jammy64
+    memory: 2048
+    cpus: 2
+  - name: bookworm
+    box: debian/bookworm64
+    memory: 2048
+    cpus: 2
+  - name: bullseye
+    box: debian/bullseye64
+    memory: 2048
+    cpus: 2
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

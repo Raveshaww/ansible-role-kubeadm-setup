@@ -18,11 +18,13 @@ Additionally, the following ports will be opened via UFW:
 - 10250/tcp
 - 30000:32767/tcp
 
+Please note that this playbook will not enable UFW. 
+
 Please note that this means that ports required for a controlplane node are not opened. Additionally, a CNI and any additional configuration required for the selected CNI will not be handled by this role. This playbook will also not join nodes to a cluster.
 
 # Requirements
 
-None, though it is always best to make sure your nodes are up to
+This role requires UFW to be installed on target systems.
 
 # Role Variables
 
