@@ -1,0 +1,10 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure that UFW is installed
+      ansible.builtin.apt:
+        name: ufw
+        state: present
+        update_cache: true

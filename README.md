@@ -22,7 +22,7 @@ Please note that this means that ports required for a controlplane node are not 
 
 # Requirements
 
-None, though it is always best to make sure your nodes are up to
+This role requires UFW to be installed on target systems.
 
 # Role Variables
 
