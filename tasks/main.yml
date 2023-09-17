@@ -88,37 +88,3 @@
     selection: hold
   loop: "{{ kubernetes_software }}"
   notify: Check if containerd.service is running
-
-- name: Check if containerd.service is running
-  ansible.builtin.service_facts:
-  register: service_state
-
-- name: Check if kubeadm and kubelet were installed
-  ansible.builtin.package_facts:
-  register: package_state
-
-- name: Check sysctl.d/k8s.conf
-  ansible.builtin.template:
-    src: templates/module_k8s_conf.j2
-    dest: /etc/modules-load.d/k8s.conf
-    mode: "0644"
-  check_mode: true
-  register: sysctl
-
-- name: Check systemd cgroup driver
-  ansible.builtin.template:
-    src: templates/cgroup.j2
-    dest: /etc/containerd/config.toml
-    mode: "0644"
-  check_mode: true
-  register: cgroup
-
-- name: Evaluating checks
-  ansible.builtin.assert:
-    that:
-      - service_state.ansible_facts.services["containerd.service"].state == "running"
-      - package_state.ansible_facts.packages["kubelet"] is defined
-      - package_state.ansible_facts.packages["kubeadm"] is defined
-      - sysctl is not changed
-      - cgroup is not changed
-    success_msg: "All checks passed"
