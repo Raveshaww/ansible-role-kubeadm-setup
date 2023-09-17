@@ -87,6 +87,7 @@
     name: "{{ item.name }}"
     selection: hold
   loop: "{{ kubernetes_software }}"
+  notify: Check if containerd.service is running
 
 - name: Check if containerd.service is running
   ansible.builtin.service_facts:
