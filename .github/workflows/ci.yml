@@ -5,9 +5,8 @@ name: CI
   push:
     branches:
       - master
-  workflow_dispatch:
-  # schedule:
-  #  - cron: "0 0 15 * *"
+  schedule:
+   - cron: "0 0 15 * *"
 
 defaults:
   run:
