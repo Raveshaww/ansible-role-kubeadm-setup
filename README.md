@@ -1,3 +1,4 @@
+[![CI](https://github.com/Raveshaww/ansible-role-kubeadm-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/Raveshaww/ansible-role-kubeadm-setup/actions/workflows/ci.yml)
 # Ansible Role: Kubeadm Setup
 An Ansible role to setup and install the following:
 - containerd.io
