@@ -1,0 +1,58 @@
+---
+name: CI
+"on":
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: "raveshaww.kubeadm_setup"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          path: "raveshaww.kubeadm_setup"
+
+      - name: Set up Python3
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install lint dependencies
+        run: pip3 install yamllint ansible-lint
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint
+
+  molecule:
+    name: Molecule
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          path: "raveshaww.kubeadm_setup"
+
+      - name: Set up Python3
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install test dependencies
+        run: pip3 install ansible molecule molecule-plugins[vagrant]
+
+      - name: Run Molecule tests
+        run: molecule test
+        env:
+          ANSIBLE_FORCE_COLOR: "1"
