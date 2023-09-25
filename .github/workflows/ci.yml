@@ -6,7 +6,7 @@ name: CI
     branches:
       - master
   schedule:
-   - cron: "0 0 15 * *"
+    - cron: "0 0 15 * *"
 
 defaults:
   run:
@@ -15,45 +15,9 @@ defaults:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-        with:
-          path: "raveshaww.kubeadm_setup"
-
-      - name: Set up Python3
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Install lint dependencies
-        run: pip3 install yamllint ansible-lint ansible
-
-      - name: Lint code.
-        run: |
-          yamllint .
-          ansible-lint
+    uses: ./.github/workflow/lint.yml
 
   molecule:
     name: Molecule
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          path: "raveshaww.kubeadm_setup"
-
-      - name: Set up Python3
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Install test dependencies
-        run: pip3 install ansible molecule molecule-plugins[vagrant]
-
-      - name: Run Molecule tests
-        run: molecule test
-        env:
-          ANSIBLE_FORCE_COLOR: "1"
+    uses: ./.github/workflow/molecule.yml
+    needs: [lint]

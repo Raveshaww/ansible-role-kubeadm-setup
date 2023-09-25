@@ -1,0 +1,31 @@
+---
+name: Lint
+"on":
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: "raveshaww.kubeadm_setup"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          path: "raveshaww.kubeadm_setup"
+
+      - name: Set up Python3
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install lint dependencies
+        run: pip3 install yamllint ansible-lint ansible
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint
