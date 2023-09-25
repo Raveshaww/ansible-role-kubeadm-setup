@@ -18,9 +18,9 @@ defaults:
 jobs:
   lint:
     name: Lint
-    uses: ./.github/workflow/lint.yml
+    uses: ./.github/workflows/lint.yml
 
   publish:
     name: Release
-    uses: ./.github/workflow/ansible-galaxy.yml
+    uses: ./.github/workflows/ansible-galaxy.yml
     needs: [lint]
