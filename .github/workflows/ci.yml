@@ -19,5 +19,5 @@ jobs:
 
   molecule:
     name: Molecule
-    uses: ./.github/workflow/molecule.yml
+    uses: ./.github/workflows/molecule.yml
     needs: [lint]
